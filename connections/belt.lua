@@ -90,24 +90,38 @@ Belt.tick = function (conn)
 	local to = conn.to
 	if from.valid and to.valid then
 		--game.print("Belt ticking! Tick: " .. game.tick)
-		local f1 = from.get_transport_line(1)
 		local t1 = to.get_transport_line(1)
-		local contents = f1.get_contents()
-		local t = next(contents)
-		if t ~= nil then
-			local c = contents[t]
-			if t1.insert_at(conn.insert_pos, {name = t, count = 1}) then
-				f1.remove_item{name = t, count = 1}
+		local t2 = to.get_transport_line(2)
+		local ct1 = #t1
+		local ct2 = #t2
+		if ct1 + ct2 > 4 then return 60 end
+		local f1 = from.get_transport_line(1)
+		local f2 = from.get_transport_line(2)
+		local cf1 = #f1
+		local cf2 = #f2
+		if cf1 + cf2 == 0 then return 60 end
+
+		if cf1 > 0 and ct1 < 4 then
+			local contents = f1.get_contents()
+			local t = next(contents)
+			if t ~= nil then
+				local c = contents[t]
+				local obj = {name = t, count = 1}
+				if t1.insert_at(conn.insert_pos, obj) then
+					f1.remove_item(obj)
+				end
 			end
 		end
-		local f2 = from.get_transport_line(2)
-		local t2 = to.get_transport_line(2)
-		contents = f2.get_contents()
-		t = next(contents)
-		if t ~= nil then
-			local c = contents[t]
-			if t2.insert_at(conn.insert_pos, {name = t, count = 1}) then
-				f2.remove_item{name = t, count = 1}
+
+		if cf1 > 0  and ct1 < 4 then
+			local contents = f2.get_contents()
+			local t = next(contents)
+			if t ~= nil then
+				local c = contents[t]
+				local obj = {name = t, count = 1}
+				if t2.insert_at(conn.insert_pos, obj) then
+					f2.remove_item(obj)
+				end
 			end
 		end
 		conn.offset = (conn.offset % #(conn.delays)) + 1
